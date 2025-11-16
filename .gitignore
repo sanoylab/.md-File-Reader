@@ -1,0 +1,41 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+
+## Environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+## IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Build results
+publish/
+*.dll.config
+
+## Sensitive files
+**/appsettings.Production.json
+**/secrets.json
+**/*.secrets.json
+
+## Logs
+*.log
+logs/
+
