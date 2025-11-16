@@ -4,6 +4,7 @@ using MdReader.Services;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using AspNet.Security.OAuth.GitHub;
+using Microsoft.AspNetCore.HttpOverrides;
 
 // Helper function to extract host from connection string for logging
 static string ExtractHostFromConnectionString(string connectionString)
@@ -131,6 +132,11 @@ builder.Services.AddAuthentication(options =>
     options.LogoutPath = "/Account/Logout";
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
     options.SlidingExpiration = true;
+    // Ensure cookies work with HTTPS in production
+    if (!builder.Environment.IsDevelopment())
+    {
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    }
 })
 .AddGitHub(GitHubAuthenticationDefaults.AuthenticationScheme, options =>
 {
@@ -138,6 +144,15 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = githubClientSecret ?? string.Empty;
     options.CallbackPath = "/signin-github";
     options.Scope.Add("user:email");
+});
+
+// Configure forwarded headers for Render.com proxy
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // Trust all proxies (Render.com uses load balancers)
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 
 // Authorization
@@ -148,6 +163,10 @@ builder.Services.AddSession();
 builder.Services.AddDistributedMemoryCache();
 
 var app = builder.Build();
+
+// IMPORTANT: Use forwarded headers BEFORE other middleware
+// This allows the app to detect HTTPS when behind Render.com's proxy
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
