@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MdReader.Services;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace MdReader.Controllers;
 
@@ -30,6 +31,24 @@ public class ExportController : ControllerBase
         return userId;
     }
 
+    // Sanitize filename - remove invalid characters
+    private string SanitizeFilename(string filename)
+    {
+        if (string.IsNullOrWhiteSpace(filename))
+            return "Document";
+        
+        // Remove invalid characters for filenames
+        var sanitized = Regex.Replace(filename, @"[<>:""/\\|?*]", "");
+        // Replace multiple spaces with single space
+        sanitized = Regex.Replace(sanitized, @"\s+", " ");
+        // Trim and limit length
+        sanitized = sanitized.Trim();
+        if (sanitized.Length > 200)
+            sanitized = sanitized.Substring(0, 200);
+        
+        return string.IsNullOrWhiteSpace(sanitized) ? "Document" : sanitized;
+    }
+
     // Export markdown to PDF
     [HttpPost("pdf")]
     public async Task<IActionResult> ExportToPdf([FromBody] ExportRequest request)
@@ -51,7 +70,8 @@ public class ExportController : ControllerBase
             }
 
             var pdfBytes = _exportService.ExportToPdf(content, title);
-            return File(pdfBytes, "application/pdf", $"{title}.pdf");
+            var sanitizedTitle = SanitizeFilename(title);
+            return File(pdfBytes, "application/pdf", $"{sanitizedTitle}.pdf");
         }
         catch (InvalidOperationException ex)
         {
@@ -82,7 +102,8 @@ public class ExportController : ControllerBase
         }
 
         var wordBytes = _exportService.ExportToWord(content, title);
-        return File(wordBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"{title}.docx");
+        var sanitizedTitle = SanitizeFilename(title);
+        return File(wordBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"{sanitizedTitle}.docx");
     }
 }
 

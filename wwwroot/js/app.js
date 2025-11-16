@@ -1,5 +1,6 @@
 // Markdown preview and document management
 let currentDocumentId = null;
+let currentDocumentTitle = null;
 let debounceTimer = null;
 let documentCount = 0;
 let documentLimit = 500;
@@ -225,6 +226,7 @@ async function loadDocument(id) {
         const docData = await response.json();
         document.getElementById('markdown-input').value = docData.content;
         currentDocumentId = docData.id;
+        currentDocumentTitle = docData.title || 'Document';
         updatePreview();
         
         // Highlight selected document
@@ -289,6 +291,9 @@ async function saveDocument() {
 
         const result = await response.json();
         currentDocumentId = result.id;
+        if (result.title) {
+            currentDocumentTitle = result.title;
+        }
         
         // Update document count from response
         if (result.documentCount !== undefined) {
@@ -316,6 +321,7 @@ async function saveDocument() {
 function newDocument() {
     document.getElementById('markdown-input').value = '';
     currentDocumentId = null;
+    currentDocumentTitle = null;
     updatePreview();
     
     // Remove highlight from all documents
@@ -362,6 +368,35 @@ async function deleteDocument(id) {
     }
 }
 
+// Sanitize filename - remove invalid characters
+function sanitizeFilename(filename) {
+    // Remove invalid characters for filenames
+    return filename
+        .replace(/[<>:"/\\|?*]/g, '') // Remove invalid characters
+        .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+        .trim()
+        .substring(0, 200); // Limit length
+}
+
+// Extract filename from Content-Disposition header
+function getFilenameFromResponse(response, defaultFilename) {
+    const contentDisposition = response.headers.get('Content-Disposition');
+    if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+            let filename = filenameMatch[1].replace(/['"]/g, '');
+            // Handle URL-encoded filenames
+            try {
+                filename = decodeURIComponent(filename);
+            } catch (e) {
+                // If decoding fails, use as-is
+            }
+            return sanitizeFilename(filename) || defaultFilename;
+        }
+    }
+    return defaultFilename;
+}
+
 // Export document
 async function exportDocument(format) {
     const content = document.getElementById('markdown-input').value;
@@ -387,11 +422,18 @@ async function exportDocument(format) {
             throw new Error('Failed to export document');
         }
 
+        // Get filename from Content-Disposition header or use document title
+        const defaultFilename = currentDocumentTitle 
+            ? `${sanitizeFilename(currentDocumentTitle)}.${format === 'pdf' ? 'pdf' : 'docx'}`
+            : `document.${format === 'pdf' ? 'pdf' : 'docx'}`;
+        
+        const filename = getFilenameFromResponse(response, defaultFilename);
+
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `document.${format === 'pdf' ? 'pdf' : 'docx'}`;
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
