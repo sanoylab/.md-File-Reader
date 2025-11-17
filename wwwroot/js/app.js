@@ -23,28 +23,45 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeSidebar();
 });
 
+// Check if device is mobile
+function isMobile() {
+    return window.innerWidth <= 768;
+}
+
 // Toggle sidebar visibility
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const openBtn = document.getElementById('sidebar-open-btn');
     const mainContent = document.querySelector('.main-content-area');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const isMobileDevice = isMobile();
     
     if (sidebar.classList.contains('hidden')) {
         sidebar.classList.remove('hidden');
         openBtn.style.display = 'none';
-        if (mainContent) {
+        if (backdrop && isMobileDevice) {
+            backdrop.classList.add('active');
+        }
+        if (mainContent && !isMobileDevice) {
             mainContent.style.marginLeft = '280px';
         }
-        // Save preference
-        localStorage.setItem('sidebarVisible', 'true');
+        // Save preference (only for desktop)
+        if (!isMobileDevice) {
+            localStorage.setItem('sidebarVisible', 'true');
+        }
     } else {
         sidebar.classList.add('hidden');
         openBtn.style.display = 'flex';
-        if (mainContent) {
+        if (backdrop && isMobileDevice) {
+            backdrop.classList.remove('active');
+        }
+        if (mainContent && !isMobileDevice) {
             mainContent.style.marginLeft = '0';
         }
-        // Save preference
-        localStorage.setItem('sidebarVisible', 'false');
+        // Save preference (only for desktop)
+        if (!isMobileDevice) {
+            localStorage.setItem('sidebarVisible', 'false');
+        }
     }
 }
 
@@ -54,22 +71,49 @@ function initializeSidebar() {
     const sidebar = document.getElementById('sidebar');
     const openBtn = document.getElementById('sidebar-open-btn');
     const mainContent = document.querySelector('.main-content-area');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const isMobileDevice = isMobile();
     
-    // Default to visible if no preference saved
-    if (sidebarVisible === 'false') {
+    // On mobile, sidebar is hidden by default
+    if (isMobileDevice) {
         sidebar.classList.add('hidden');
         openBtn.style.display = 'flex';
+        if (backdrop) {
+            backdrop.classList.remove('active');
+        }
         if (mainContent) {
             mainContent.style.marginLeft = '0';
         }
     } else {
-        // Sidebar visible by default
-        sidebar.classList.remove('hidden');
-        openBtn.style.display = 'none';
-        if (mainContent) {
-            mainContent.style.marginLeft = '280px';
+        // Desktop: hide backdrop
+        if (backdrop) {
+            backdrop.classList.remove('active');
+        }
+        // Desktop: use saved preference or default to visible
+        if (sidebarVisible === 'false') {
+            sidebar.classList.add('hidden');
+            openBtn.style.display = 'flex';
+            if (mainContent) {
+                mainContent.style.marginLeft = '0';
+            }
+        } else {
+            // Sidebar visible by default on desktop
+            sidebar.classList.remove('hidden');
+            openBtn.style.display = 'none';
+            if (mainContent) {
+                mainContent.style.marginLeft = '280px';
+            }
         }
     }
+    
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            initializeSidebar();
+        }, 250);
+    });
 }
 
 // Initialize markdown preview with debouncing

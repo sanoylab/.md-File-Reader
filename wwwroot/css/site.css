@@ -1382,6 +1382,15 @@ html {
 @media (max-width: 768px) {
   .app-header {
     height: 52px;
+    padding: 0 1rem;
+  }
+
+  .header-content {
+    padding: 0 0.5rem;
+  }
+
+  .brand-text {
+    font-size: 0.9rem;
   }
 
   main {
@@ -1452,6 +1461,130 @@ html {
   .header-actions {
     gap: 0.5rem;
   }
+
+  /* Mobile Editor Styles */
+  .container-fluid {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .documents-sidebar {
+    width: 100%;
+    max-width: 100%;
+    z-index: 1000;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    position: fixed;
+    top: 52px;
+    left: 0;
+    height: calc(100vh - 52px);
+  }
+
+  .documents-sidebar.hidden {
+    transform: translateX(-100%);
+  }
+
+  /* Mobile sidebar backdrop */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 52px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(4px);
+    transition: opacity 0.3s ease;
+  }
+
+  .sidebar-backdrop.active {
+    display: block;
+  }
+}
+
+/* Hide backdrop on desktop */
+@media (min-width: 769px) {
+  .sidebar-backdrop {
+    display: none !important;
+  }
+}
+
+/* Continue mobile styles */
+@media (max-width: 768px) {
+  #input-panel {
+    width: 100% !important;
+    height: 50%;
+    min-height: 200px;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  #preview-panel {
+    width: 100% !important;
+    height: 50%;
+    min-height: 200px;
+  }
+
+  .resizer {
+    display: none !important;
+  }
+
+  /* Mobile Button Styles */
+  .btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-group .btn {
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Mobile Panel Headers */
+  .border-bottom > div {
+    padding: 0.75rem !important;
+  }
+
+  .border-bottom h6 {
+    font-size: 0.875rem;
+  }
+
+  /* Mobile Textarea */
+  #markdown-input {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    padding: 1rem;
+  }
+
+  /* Mobile Preview */
+  #markdown-preview {
+    padding: 1rem !important;
+    font-size: 0.9rem;
+  }
+
+  /* Mobile Document List */
+  .document-item {
+    padding: 0.75rem;
+  }
+
+  .document-item h6 {
+    font-size: 0.875rem;
+  }
+
+  .document-item small {
+    font-size: 0.75rem;
+  }
+
+  /* Mobile Sidebar Header */
+  .sidebar-header {
+    padding: 0.75rem;
+  }
+
+  .sidebar-title-text {
+    font-size: 0.875rem;
+  }
+
+  .document-count {
+    font-size: 0.7rem !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1474,5 +1607,104 @@ html {
 
   .feature-item p {
     font-size: 0.85rem;
+  }
+
+  /* Extra Small Mobile Styles */
+  .app-header {
+    height: 48px;
+    padding: 0 0.75rem;
+  }
+
+  main {
+    margin-top: 48px;
+    height: calc(100vh - 48px);
+  }
+
+  .brand-text {
+    font-size: 0.85rem;
+  }
+
+  .header-actions {
+    gap: 0.25rem;
+  }
+
+  .theme-toggle-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .logout-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .user-info-simple {
+    padding: 0.3rem 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .user-name-simple {
+    max-width: 80px;
+  }
+
+  /* Smaller buttons on very small screens */
+  .btn-sm {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .btn-group .btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  /* Adjust panel heights for very small screens */
+  #input-panel {
+    height: 45%;
+    min-height: 150px;
+  }
+
+  #preview-panel {
+    height: 55%;
+    min-height: 150px;
+  }
+
+  /* Smaller sidebar toggle FAB */
+  .sidebar-toggle-fab {
+    width: 48px;
+    height: 48px;
+    bottom: 0.75rem;
+    left: 0.75rem;
+  }
+
+  /* Smaller text in panels */
+  .border-bottom h6 {
+    font-size: 0.8rem;
+  }
+
+  #markdown-input {
+    font-size: 16px !important;
+    padding: 0.75rem;
+  }
+
+  #markdown-preview {
+    padding: 0.75rem !important;
+    font-size: 0.85rem;
+  }
+}
+
+/* Tablet Styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .documents-sidebar {
+    width: 240px;
+  }
+
+  .main-content-area {
+    margin-left: 240px;
+  }
+
+  #input-panel,
+  #preview-panel {
+    width: 50% !important;
   }
 }
