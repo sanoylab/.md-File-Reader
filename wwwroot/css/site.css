@@ -289,7 +289,9 @@ body {
   margin-top: 56px;
   background: var(--bg-primary);
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .landing-background {
@@ -355,7 +357,7 @@ body {
   width: 100%;
   text-align: center;
   position: relative;
-  z-index: 1;
+  z-index: 10;
 }
 
 .landing-hero {
@@ -599,6 +601,10 @@ body {
   box-shadow: 0 8px 24px rgba(36, 41, 46, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
+  z-index: 10;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
 }
 
 .btn-shine {
@@ -647,6 +653,8 @@ body {
   padding-top: 2rem;
   border-top: 1px solid var(--border-color);
   animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.7s both;
+  position: relative;
+  z-index: 10;
 }
 
 .landing-footer p {
@@ -1402,6 +1410,18 @@ html {
     min-height: calc(100vh - 52px);
     margin-top: 52px;
     padding: 1.5rem 1rem;
+    align-items: flex-start;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+  }
+
+  .landing-content {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .landing-hero {
+    width: 100%;
   }
 
   .title-main {
@@ -1415,12 +1435,19 @@ html {
 
   .landing-subtitle {
     font-size: 1.1rem;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
   }
 
   .landing-features {
     grid-template-columns: 1fr;
     gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .landing-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
   }
 
   .feature-item {
@@ -1441,7 +1468,19 @@ html {
     padding: 1rem 2rem;
     font-size: 1rem;
     width: 100%;
-    max-width: 320px;
+    max-width: 100%;
+    min-height: 48px;
+    position: relative;
+    z-index: 10;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .landing-login-form {
+    margin-top: 2rem;
+    width: 100%;
+    position: relative;
+    z-index: 10;
   }
 
   .user-info-simple {
